@@ -29,10 +29,7 @@ Functionals
 
 how you exploited functionals in your code
 ============================
-I used the foreach functional where it made sense and was cleaner, but because of the way
-my code was structured, it was often more intuitive to use a simple for loop as opposed
-to a map functional or even a foreach functional, as I would be using the indices of what
-I was iterating through.
+I used the foreach functional where it made sense and was cleaner. This was most apparent in the the method where I iteraete through a cell's neighbors. In addition, I felt that the fill functional was very useful for initializing my 2D arrays. I was able to minimize the usage of for loops, though there were certain places where they worked better due to the nature of what was being looped through.
 
 
 

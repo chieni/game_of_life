@@ -8,19 +8,16 @@ var Game = function(width, height) {
 	var that = Object.create(Game.prototype);
 	var interval = null;
 
-	// Initialize 2D array
-	var cells = new Array(height);
-	for (var i = 0; i<height; i++){
-		cells[i] = new Array(width);
-	}
-
-	// Make everything dead
-	for (var i =0; i<height; i++){
-		for (var j =0; j<width; j++){
-			cells[i][j] = 0;
+	/* Makes a game board where all cells are dead */
+	var makeNewBoard = function(){
+		var newCells = new Array(height);
+		for (var i = 0; i<height; i++){
+			newCells[i] = new Array(width).fill(0);
 		}
+		return newCells;
 	}
 
+	var cells = makeNewBoard();
 	var subscribers = [];
 	/**
 		Subscribe to changes to this object.
@@ -32,8 +29,9 @@ var Game = function(width, height) {
 	}
 
 	var publishChanges = function() {
-	    for (var i = 0; i < subscribers.length; i++)
-	    	subscribers[i]();
+		subscribers.forEach(function(subscriberFunc){
+			subscriberFunc();
+		});
 	};
 
 	/**
@@ -76,17 +74,7 @@ var Game = function(width, height) {
 	**/
 	that.updateGame = function(){
 		// Initialize 2D array
-		var newCells = new Array(height);
-		for (var i = 0; i<height; i++){
-			newCells[i] = new Array(width);
-		}
-
-		// Make everything dead
-		for (var i =0; i<height; i++){
-			for (var j =0; j<width; j++){
-				newCells[i][j] = 0;
-			}
-		}
+		var newCells = makeNewBoard();
 
 		for (var i = 0; i<height; i++){
 			for (var j = 0; j<width; j++){
@@ -100,37 +88,27 @@ var Game = function(width, height) {
 
 	// Resets the board so that all cells are dead.
 	var resetBoard = function(){
-		// Initialize 2D array
-		var newCells = new Array(height);
-		for (var i = 0; i<height; i++){
-			newCells[i] = new Array(width);
-		}
-
-		// Make everything dead
-		for (var i =0; i<height; i++){
-			for (var j =0; j<width; j++){
-				newCells[i][j] = 0;
-			}
-		}
-
-		cells = newCells;
+		cells = makeNewBoard();
 	}
+
+
 
 	// Retrieves the number of live neighbors of the x,y cell
 	var getLiveNeighbors = function(x, y){
 		var liveCount = 0;
-		for (var i = -1; i<=1; i++){
-			for (var j = -1; j<=1; j++){
-				if (i === 0 && j === 0){}
-				else if ((y+j < 0) || (x+i < 0) || (y+j > height - 1) || (x+i 
+		var offsets = [-1,0,1];
+		offsets.forEach(function(dx){
+			offsets.forEach(function(dy){
+				if (dx === 0 && dy === 0){}
+				else if ((y+dy < 0) || (x+dx < 0) || (y+dy > height - 1) || (x+dx 
 					> width - 1)){}
 				else {
-					if (cells[y+j][x+i] === 1){
+					if (cells[y+dy][x+dx] === 1){
 						liveCount += 1;
 					}
 				}
-			}
-		}
+			});
+		});
 		return liveCount;
 	}
 
@@ -191,22 +169,22 @@ var Game = function(width, height) {
 	that.buildPulsar = function(){
 		resetBoard();
 		rows = [2, 7, 9, 14];
-		row_cols = [8,9,10,14,15,16];
+		rowCols = [8,9,10,14,15,16];
 
 		cols = [6, 11, 13, 18];
-		col_rows = [4,5,6,10,11,12];
+		colRows = [4,5,6,10,11,12];
 
-		$.each(rows, function(i, row){
-			$.each(row_cols, function(j, col){
+		rows.forEach(function(row){
+			rowCols.forEach(function(col){
 				cells[row][col] = 1;
 			});
 		});
 
-		$.each(cols, function(i, col){
-			$.each(col_rows, function(j, row){
+		cols.forEach(function(col){
+			colRows.forEach(function(row){
 				cells[row][col] = 1;
-			});
-		});
+			})
+		})
 
 		publishChanges();
 	}
